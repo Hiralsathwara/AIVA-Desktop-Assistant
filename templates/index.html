@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AIVA</title>
+  <style>
+        /* Basic reset and dark theme */
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            font-family: 'Orbitron', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #000814;
+            color: #00f0ff;
+            overflow: hidden;
+            background-image: radial-gradient(ellipse at center, #000814 0%, #000000 100%);
+            background-repeat: no-repeat;
+            background-size: cover;
+        }
+        .container {
+            display: flex;
+            height: 100vh;
+            width: 100vw;
+        }
+        .panel {
+            padding: 20px;
+            box-sizing: border-box;
+            overflow-y: auto;
+        }
+        .left-panel, .right-panel {
+            width: 20%;
+            background-color: #001f3f;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            font-size: 14px;
+            font-family: 'Orbitron', monospace;
+            text-shadow: 0 0 10px #00f0ff;
+        }
+        .center-panel {
+            flex-grow: 1;
+            background-color: #000205;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+        h2 {
+            margin: 0 0 10px 0;
+            font-weight: 600;
+            color: #00f0ff;
+            letter-spacing: 1.5px;
+            font-family: 'Orbitron', monospace;
+            text-shadow: 0 0 15px #00f0ff;
+        }
+        .info-block {
+            background-color: #001f3f;
+            padding: 10px 15px;
+            border-radius: 8px;
+            box-shadow: 0 0 15px #00f0ff;
+        }
+        .info-label {
+            font-weight: 700;
+            color: #00f0ff;
+            margin-bottom: 5px;
+            font-family: 'Orbitron', monospace;
+            text-shadow: 0 0 10px #00f0ff;
+        }
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background-color: #000814;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 5px;
+            box-shadow: inset 0 0 5px #00f0ff;
+        }
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #00f0ff, #00aaff);
+            width: 0%;
+            transition: width 0.5s ease-in-out;
+            box-shadow: 0 0 10px #00f0ff;
+        }
+        /* Circular animation center */
+        .circle-logo {
+              width: 100%;
+                height: 100%;
+                object-fit: cover;   /* keeps your logo fitted inside */
+                border-radius: 50%;  /* ensures logo stays circular */
+                pointer-events: none; 
+            
+            }
+        .circle-container {
+            position: relative;
+            width: 400px;
+            height: 400px;
+            position: relative;
+            width: 300px;   /* matches logo size */
+            height: 300px;
+            border-radius: 50%;         /* circular mask */
+            overflow: hidden;           /* hide black corners */
+            box-shadow: 0 0 40px 20px cyan; 
+        }
+        .circle-center {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 120px;
+            height: 120px;
+            margin-left: -60px;
+            margin-top: -60px;
+            background: transparent;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #00f0ff;
+            font-weight: 900;
+            font-size: 36px;
+            font-family: 'Orbitron', monospace;
+            text-shadow:
+                0 0 5px #00f0ff,
+                0 0 10px #00f0ff,
+                0 0 20px #00aaff,
+                0 0 30px #00aaff,
+                0 0 40px #00aaff,
+                0 0 50px #00aaff,
+                0 0 60px #00aaff;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+        .circle-ring {
+            position: absolute;
+            border: 2px solid #00f0ff;
+            border-radius: 50%;
+            animation: spin 20s linear infinite;
+            opacity: 0.6;
+            box-shadow:
+                0 0 10px #00f0ff,
+                0 0 20px #00aaff,
+                0 0 30px #00aaff;
+        }
+        .circle-ring:nth-child(1) {
+            width: 140px;
+            height: 140px;
+            top: 50%;
+            left: 50%;
+            margin-left: -70px;
+            margin-top: -70px;
+            animation-duration: 25s;
+        }
+        .circle-ring:nth-child(2) {
+            width: 180px;
+            height: 180px;
+            top: 50%;
+            left: 50%;
+            margin-left: -90px;
+            margin-top: -90px;
+            animation-duration: 30s;
+            animation-direction: reverse;
+        }
+        .circle-ring:nth-child(3) {
+            width: 220px;
+            height: 220px;
+            top: 50%;
+            left: 50%;
+            margin-left: -110px;
+            margin-top: -110px;
+            animation-duration: 35s;
+        }
+        .circle-ring:nth-child(4) {
+            width: 260px;
+            height: 260px;
+            top: 50%;
+            left: 50%;
+            margin-left: -130px;
+            margin-top: -130px;
+            animation-duration: 40s;
+            animation-direction: reverse;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg);}
+            100% { transform: rotate(360deg);}
+        }
+        /* Webcam feed */
+        .webcam-feed {
+            width: 100%;
+            border-radius: 8px;
+            box-shadow: 0 0 10px #00aaff;
+            margin-top: 10px;
+            border: 1px solid #00aaff;
+        }
+        /* Scrollbar styling */
+        ::-webkit-scrollbar {
+            width: 5px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #000814;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #00f0ff;
+            border-radius: 8px;
+        }
+  </style>
+</head>
+<body>
+    <div class="container">
+        <div class="panel left-panel">
+            <h2>System status</h2>
+            <div class="info-block">
+                <div class="info-label">CPU Usage</div>
+                <div class="progress-bar"><div id="cpu-progress" class="progress-fill"></div></div>
+                <div id="cpu-percent">0%</div>
+            </div>
+            <div class="info-block">
+                <div class="info-label">Memory Usage</div>
+                <div class="progress-bar"><div id="memory-progress" class="progress-fill"></div></div>
+                <div id="memory-percent">0%</div>
+            </div>
+            <div class="info-block">
+                <div class="info-label">Disk Usage</div>
+                <div class="progress-bar"><div id="storage-progress" class="progress-fill"></div></div>
+                <div id="storage-percent">0%</div>
+            </div>
+            <div class="info-block">
+                <div class="info-label">Temperature</div>
+                <div id="cpu-temp">-- °C</div>
+            </div>
+            <div class="info-block">
+               <div class="info-label">Battery</div>
+               <div id="battery-status">-- %</div>
+            </div>
+
+            <div class="info-block">
+                <div class="info-label">Network Status</div>
+                <div id="battery-status">Connected</div>
+            </div>
+        </div>
+        <div class="panel center-panel">
+            <div class="circle-container">
+                <!-- Centered logo -->
+                <img src="{{ url_for('static', filename='heart.gif') }}" 
+                     alt="Logo"
+                     class="circle-logo">
+                <!-- Spinning rings -->
+                <div class="circle-ring"></div>
+                <div class="circle-ring"></div>
+                <div class="circle-ring"></div>
+                <div class="circle-ring"></div>
+                <!-- Text overlay -->
+                <div class="circle-center">AIVA</div>
+            </div>
+        </div>
+        <div class="panel right-panel">
+            <h2>Terminal Synchronization</h2>
+            <div id="time-sync">--:--:--</div>
+            <div id="date-sync">--</div>
+
+            <h2>Network Interface</h2>
+            <div id="ip-address">IP: --</div>
+
+            <h2>Visual Input</h2>
+            <img id="webcam" class="webcam-feed" src="/video_feed" alt="Webcam Feed" />
+            <!-- <h2>Send Command</h2>
+            <input type="text" id="command-input" placeholder="Enter command here" style="width: 100%; padding: 8px; font-family: 'Orbitron', monospace; font-size: 14px;"/>
+            <button id="send-command" style="margin-top: 10px; padding: 8px; width: 100%; font-family: 'Orbitron', monospace; font-size: 14px; background-color: #00f0ff; color: #000814; border: none; border-radius: 4px; cursor: pointer;">Send</button>
+            <div id="command-response" style="margin-top: 15px; font-family: 'Orbitron', monospace; font-size: 14px; color: #00f0ff; min-height: 50px; white-space: pre-wrap;"></div> -->
+            <h2>Voice Command</h2>
+            <div id="command-response" 
+            style="margin-top: 15px; font-family: 'Orbitron', monospace; font-size: 14px; color: #00f0ff; min-height: 50px; white-space: pre-wrap;">
+            Listening...
+            </div>
+
+            <h2>Activity Log</h2>
+            <div id="activity-log" style="margin-top: 10px; font-family: 'Orbitron', monospace; font-size: 12px; color: #00f0ff; height: 200px; overflow-y: auto; border: 1px solid #00f0ff; padding: 10px; border-radius: 4px; background-color: rgba(0, 15, 63, 0.5);">
+                <div style="color: #00aaff;">Waiting for activity...</div>
+            </div>
+
+<script>
+  // 🎤 Use Web Speech API for voice recognition
+  window.SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+  const recognition = new SpeechRecognition();
+  recognition.continuous = true;   // keeps listening
+  recognition.interimResults = false; 
+  recognition.lang = "en-US";
+
+  recognition.start();
+
+  recognition.onresult = async function(event) {
+    let command = event.results[event.results.length - 1][0].transcript.trim();
+    console.log("Recognized:", command);
+
+    // Show recognized text on screen
+    document.getElementById("command-response").innerText = "You said: " + command;
+
+    // Send command to backend
+    try {
+      let response = await fetch("/api/command", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ command: command })
+      });
+      let data = await response.json();
+
+      // Show assistant's response
+      document.getElementById("command-response").innerText = data.response;
+
+      // Speak response
+      let utterance = new SpeechSynthesisUtterance(data.response);
+      utterance.rate = 1; 
+      utterance.pitch = 1; 
+      speechSynthesis.speak(utterance);
+
+    } catch (err) {
+      console.error("Error:", err);
+    }
+  };
+
+  recognition.onerror = function(event) {
+    console.error("Speech recognition error:", event.error);
+    recognition.stop();
+    recognition.start(); // restart automatically
+  };
+</script>
+
+
+        </div>
+    </div>
+<script>
+async function fetchSystemStatus() {
+    try {
+        const res = await fetch("/api/system_status");
+        const data = await res.json();
+
+        // CPU
+        document.getElementById('cpu-progress').style.width = data.cpu + '%';
+        document.getElementById('cpu-percent').textContent = data.cpu + '%';
+
+        // Memory
+        document.getElementById('memory-progress').style.width = data.memory_percent + '%';
+        document.getElementById('memory-percent').textContent = data.memory_percent + '%';
+
+        // Disk
+        document.getElementById('storage-progress').style.width = data.disk_percent + '%';
+        document.getElementById('storage-percent').textContent = data.disk_percent + '%';
+
+        // Temperature
+        document.getElementById('cpu-temp').textContent = 
+            (data.temperature !== null ? data.temperature.toFixed(1) : '--') + ' °C';
+
+        // Battery
+        document.getElementById('battery-status').textContent = 
+            (data.battery !== null ? data.battery : '--') + ' %';
+
+        // Time & Date
+        document.getElementById('time-sync').textContent = data.time;
+        document.getElementById('date-sync').textContent = data.date;
+
+        // IP
+        document.getElementById('ip-address').textContent = 'IP: ' + (data.public_ip || "--");
+
+        // Network status
+        // If you want to show "Connected/Disconnected" separately, you can use:
+        // document.getElementById('network-status').textContent = data.network;
+
+        // Network Status
+        document.getElementById('network-status').textContent = data.network || "Disconnected";
+
+    } catch (err) {
+        console.error("Error fetching system status:", err);
+    }
+}
+
+// Auto-refresh every 3 sec
+setInterval(fetchSystemStatus, 3000);
+fetchSystemStatus();
+
+// ──────────────────────────────────────────────────────────────
+// ACTIVITY LOG — Fetch and display in real-time
+// ──────────────────────────────────────────────────────────────
+async function fetchActivityLog() {
+    try {
+        let response = await fetch("/api/activity");
+        let data = await response.json();
+        
+        let activityHTML = '';
+        if (data.activities && data.activities.length > 0) {
+            for (let activity of data.activities) {
+                let color = '#00f0ff';  // Default cyan
+                if (activity.status.includes('🟡')) color = '#ffaa00';  // Orange for wake
+                if (activity.status.includes('🎙️')) color = '#00ff00';  // Green for heard
+                if (activity.status.includes('⚙️')) color = '#00aaff';  // Light blue for processing
+                if (activity.status.includes('🔴')) color = '#ff0000';  // Red for stop
+                if (activity.status.includes('❌')) color = '#ff0000';  // Red for error
+                if (activity.status.includes('⏱️')) color = '#ffaa00';  // Orange for timeout
+                
+                activityHTML += `<div style="color: ${color}; margin-bottom: 5px;">
+                    <span style="color: #00aaff;">[${activity.timestamp}]</span> 
+                    ${activity.status} ${activity.message}
+                </div>`;
+            }
+        } else {
+            activityHTML = '<div style="color: #00aaff;">Waiting for activity...</div>';
+        }
+        
+        let activityLog = document.getElementById("activity-log");
+        activityLog.innerHTML = activityHTML;
+        // Auto-scroll to bottom
+        activityLog.scrollTop = activityLog.scrollHeight;
+        
+    } catch (err) {
+        console.error("Error fetching activity log:", err);
+    }
+}
+
+// Auto-refresh activity log every 1 sec for real-time updates
+setInterval(fetchActivityLog, 1000);
+fetchActivityLog();
+</script>
+
+</body>
+</html>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 

@@ -1,0 +1,22 @@
+Flask
+flask-cors
+pyttsx3
+SpeechRecognition
+wikipedia
+pywhatkit
+pyautogui
+google-generativeai
+translate
+requests
+opencv-python
+numpy
+pandas
+matplotlib
+pillow
+tensorflow
+protobuf
+cx-Freeze
+
+
+# run this command to install all the dependencies
+# pip install -r requirements.txt --no-cache-dir
