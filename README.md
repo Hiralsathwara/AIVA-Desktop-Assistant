@@ -54,11 +54,13 @@ AIVA (Artificial Intelligence Voice Assistant) is a Python-based desktop voice a
 ### Home Screen
 ![Home Screen](screenshots/1-git.jpeg)
 
-### Voice Assistant
-![Voice Assistant](screenshots/2-git.mp4)
+## Demo Videos
 
-### Voice Assistant
-![Voice Assistant](screenshots/3-git.mp4)
+- [AIVA Demo 1](screenshots/22-git.mp4)
+- [AIVA Demo 2](screenshots/22-git.mp4)
+
+
+
 
 ## Project Structure
 
